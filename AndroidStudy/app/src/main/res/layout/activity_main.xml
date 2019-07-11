@@ -35,28 +35,28 @@
         android:text="Camera" />
 
     <Button
-        android:id="@+id/button2"
+        android:id="@+id/videoView"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginTop="5dp"
         android:text="VideoActivity" />
 
     <Button
-        android:id="@+id/button3"
+        android:id="@+id/mediaPlayer"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginTop="5dp"
         android:text="MediaPlayer" />
 
     <Button
-        android:id="@+id/button4"
+        android:id="@+id/ijkPlayer"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginTop="5dp"
         android:text="IJKPlayer" />
 
     <Button
-        android:id="@+id/button5"
+        android:id="@+id/mediaRecord"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginTop="5dp"

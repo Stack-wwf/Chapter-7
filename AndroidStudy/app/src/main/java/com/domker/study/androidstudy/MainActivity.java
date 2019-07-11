@@ -22,10 +22,10 @@ public class MainActivity extends AppCompatActivity {
         open(R.id.image, ImageActivity.class);
         open(R.id.glideImage, GlideImageActivity.class);
         open(R.id.camera, CameraActivity.class);
-        open(R.id.button2, VideoActivity.class);
-        open(R.id.button3, MediaPlayerActivity.class);
-        open(R.id.button4, IJKPlayerActivity.class);
-        open(R.id.button5, MediaRecordActivity.class);
+        open(R.id.videoView, VideoActivity.class);
+        open(R.id.mediaPlayer, MediaPlayerActivity.class);
+        open(R.id.ijkPlayer, IJKPlayerActivity.class);
+        open(R.id.mediaRecord, MediaRecordActivity.class);
 
     }
 
