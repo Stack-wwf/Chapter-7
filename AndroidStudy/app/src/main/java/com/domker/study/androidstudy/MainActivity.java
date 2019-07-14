@@ -7,13 +7,10 @@ import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 
 public class MainActivity extends AppCompatActivity {
-    private Player player;
-    
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        player = new Player(this);
         initButton();
     }
 
@@ -25,7 +22,6 @@ public class MainActivity extends AppCompatActivity {
         open(R.id.videoView, VideoActivity.class);
         open(R.id.mediaPlayer, MediaPlayerActivity.class);
         open(R.id.ijkPlayer, IJKPlayerActivity.class);
-        open(R.id.mediaRecord, MediaRecordActivity.class);
 
     }
 

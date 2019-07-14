@@ -14,13 +14,12 @@ import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.media.ExifInterface;
 import android.support.v4.graphics.drawable.DrawableCompat;
+import android.support.v4.view.PagerAdapter;
+import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
-import android.view.GestureDetector;
 import android.view.LayoutInflater;
-import android.view.MotionEvent;
 import android.view.View;
 import android.widget.ImageView;
-import android.widget.ViewFlipper;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -28,32 +27,37 @@ import java.io.InputStream;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.util.ArrayList;
+import java.util.List;
 
-public class ImageActivity extends AppCompatActivity implements View.OnTouchListener {
-    ViewFlipper flipper = null;
+public class ImageActivity extends AppCompatActivity {
+    ViewPager pager = null;
     LayoutInflater layoutInflater = null;
-    GestureDetector detector = null;
+    List<View> pages = new ArrayList<View>();
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_image);
-        flipper = (ViewFlipper) findViewById(R.id.flipper);
-        flipper.setOnTouchListener(this);
-        detector = new GestureDetector(new MyGestureListener());
         layoutInflater = getLayoutInflater();
-        flipper.post(new Runnable() {
+        pager = (ViewPager) findViewById(R.id.view_pager);
+
+        pager.post(new Runnable() {
             @Override
             public void run() {
                 addImage(decodeBitmapFromResource(getResources(),
                         R.drawable.drawableimage,
-                        flipper.getWidth(),
-                        flipper.getHeight()));
+                        pager.getWidth(),
+                        pager.getHeight()));
                 addImage(decodeBitmapFromVectorResource(R.drawable.ic_markunread));
-                new ReadFileTask(flipper.getWidth(),flipper.getHeight()).execute("/sdcard/fileimage.jpg");
-                new ReadAssetsTask(flipper.getWidth(),flipper.getHeight()).execute("assetsimage.jpg");
-                new ReadRawTask(flipper.getWidth(),flipper.getHeight()).execute(R.raw.rawimage);
-                loadNetImage(flipper.getWidth(), flipper.getHeight());
+                new ReadFileTask(pager.getWidth(), pager.getHeight()).execute("/sdcard/fileimage.jpg");
+                new ReadAssetsTask(pager.getWidth(), pager.getHeight()).execute("assetsimage.jpg");
+                new ReadRawTask(pager.getWidth(), pager.getHeight()).execute(R.raw.rawimage);
+                loadNetImage(pager.getWidth(), pager.getHeight());
+
+                ViewAdapter adapter = new ViewAdapter();
+                adapter.setDatas(pages);
+                pager.setAdapter(adapter);
             }
         });
 
@@ -62,10 +66,15 @@ public class ImageActivity extends AppCompatActivity implements View.OnTouchList
     private class ReadRawTask extends AsyncTask<Integer, Void, Bitmap> {
         int mWidth = 0;
         int mHeight = 0;
+        ImageView imageView;
+
         ReadRawTask(int width, int height) {
+            imageView = (ImageView) layoutInflater.inflate(R.layout.activity_image_item, null);
+            pages.add(imageView);
             mWidth = width;
             mHeight = height;
         }
+
         @Override
         protected Bitmap doInBackground(Integer... integers) {
             return decodeBitmapFromRaw(ImageActivity.this.getResources(), integers[0], mWidth, mHeight);
@@ -73,17 +82,22 @@ public class ImageActivity extends AppCompatActivity implements View.OnTouchList
 
         @Override
         protected void onPostExecute(Bitmap bitmap) {
-            addImage(bitmap);
+            addImageAsyn(imageView, bitmap);
         }
     }
 
     private class ReadFileTask extends AsyncTask<String, Void, Bitmap> {
         int mWidth = 0;
         int mHeight = 0;
+        ImageView imageView;
+
         ReadFileTask(int width, int height) {
+            imageView = (ImageView) layoutInflater.inflate(R.layout.activity_image_item, null);
+            pages.add(imageView);
             mWidth = width;
             mHeight = height;
         }
+
         @Override
         protected Bitmap doInBackground(String... strings) {
             return decodeBitmapFromFile(strings[0],
@@ -93,17 +107,22 @@ public class ImageActivity extends AppCompatActivity implements View.OnTouchList
 
         @Override
         protected void onPostExecute(Bitmap bitmap) {
-            addImage(bitmap);
+            addImageAsyn(imageView, bitmap);
         }
     }
 
     private class ReadAssetsTask extends AsyncTask<String, Void, Bitmap> {
         int mWidth = 0;
         int mHeight = 0;
+        ImageView imageView;
+
         ReadAssetsTask(int width, int height) {
+            imageView = (ImageView) layoutInflater.inflate(R.layout.activity_image_item, null);
+            pages.add(imageView);
             mWidth = width;
             mHeight = height;
         }
+
         @Override
         protected Bitmap doInBackground(String... strings) {
             return decodeBitmapFromAssets(ImageActivity.this,
@@ -114,11 +133,13 @@ public class ImageActivity extends AppCompatActivity implements View.OnTouchList
 
         @Override
         protected void onPostExecute(Bitmap bitmap) {
-            addImage(bitmap);
+            addImageAsyn(imageView, bitmap);
         }
     }
 
     private void loadNetImage(final int width, final int height) {
+        final ImageView imageView = (ImageView) layoutInflater.inflate(R.layout.activity_image_item, null);
+        pages.add(imageView);
         new Thread(new Runnable() {
             @Override
             public void run() {
@@ -128,7 +149,7 @@ public class ImageActivity extends AppCompatActivity implements View.OnTouchList
                 ImageActivity.this.runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
-                        addImage(bitmap);
+                        addImageAsyn(imageView, bitmap);
                     }
                 });
             }
@@ -138,7 +159,11 @@ public class ImageActivity extends AppCompatActivity implements View.OnTouchList
     private void addImage(Bitmap bitmap) {
         ImageView imageView = (ImageView) layoutInflater.inflate(R.layout.activity_image_item, null);
         imageView.setImageBitmap(bitmap);
-        flipper.addView(imageView);
+        pages.add(imageView);
+    }
+
+    private void addImageAsyn(ImageView imageView, Bitmap bitmap) {
+        imageView.setImageBitmap(bitmap);
     }
 
     private Bitmap decodeBitmapFromNet(String url, int reqWidth, int reqHeight) {
@@ -238,7 +263,7 @@ public class ImageActivity extends AppCompatActivity implements View.OnTouchList
     }
 
     private Bitmap decodeBitmapFromRaw(Resources res, int resId, int reqWidth, int reqHeight) {
-        InputStream is = res .openRawResource(resId);
+        InputStream is = res.openRawResource(resId);
         BitmapFactory.Options options = new BitmapFactory.Options();
         options.inJustDecodeBounds = true;
         BitmapFactory.decodeStream(is, null, options);
@@ -343,34 +368,5 @@ public class ImageActivity extends AppCompatActivity implements View.OnTouchList
             e.printStackTrace();
         }
         return bitmap;
-    }
-
-    @Override
-    public boolean onTouch(View v, MotionEvent event) {
-        return detector.onTouchEvent(event);
-    }
-
-    private class MyGestureListener extends GestureDetector.SimpleOnGestureListener {
-        final int FLING_MIN_DISTANCE = 100, FLING_MIN_VELOCITY = 200;
-
-        @Override
-        public boolean onDown(MotionEvent e) {
-            return true;
-        }
-
-        @Override
-        public boolean onFling(MotionEvent e1, MotionEvent e2, float velocityX,
-                               float velocityY) {
-            // Fling left
-            if (e1.getX() - e2.getX() > FLING_MIN_DISTANCE
-                    && Math.abs(velocityX) > FLING_MIN_VELOCITY) {
-                flipper.showNext();
-            } else if (e2.getX() - e1.getX() > FLING_MIN_DISTANCE
-                    && Math.abs(velocityX) > FLING_MIN_VELOCITY) {
-                // Fling right
-                flipper.showPrevious();
-            }
-            return true;
-        }
     }
 }

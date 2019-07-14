@@ -33,8 +33,7 @@
         <activity android:name=".CameraActivity" />
         <activity android:name=".VideoActivity" />
         <activity android:name=".MediaPlayerActivity" />
-        <activity android:name=".IJKPlayerActivity" />
-        <activity android:name=".MediaRecordActivity" />
+        <activity android:name=".IJKPlayerActivity" android:configChanges="keyboardHidden|orientation|screenSize"/>
         <provider
             android:name="android.support.v4.content.FileProvider"
             android:authorities="com.domker.study.androidstudy.fileprovider"

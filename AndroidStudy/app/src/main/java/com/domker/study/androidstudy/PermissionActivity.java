@@ -56,7 +56,11 @@ public class PermissionActivity extends AppCompatActivity {
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
         if (requestCode == REQUEST_PERMISSION) {
-            Toast.makeText(this, "已经授权" + Arrays.toString(permissions), Toast.LENGTH_LONG).show();
+            for (int i = 0; i < permissions.length; i++) {
+                if (grantResults.length > i && grantResults[i] == PackageManager.PERMISSION_GRANTED) {
+                    Toast.makeText(this, "已经授权" + permissions[i], Toast.LENGTH_LONG).show();
+                }
+            }
         }
     }
 }
