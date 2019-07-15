@@ -9,6 +9,8 @@ import android.view.View;
 import android.widget.ImageView;
 
 import com.bumptech.glide.Glide;
+import com.bumptech.glide.load.engine.DiskCacheStrategy;
+import com.bumptech.glide.request.RequestOptions;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -48,6 +50,7 @@ public class GlideImageActivity extends AppCompatActivity {
         ImageView imageView = (ImageView) layoutInflater.inflate(R.layout.activity_image_item, null);
         Glide.with(this)
                 .load(path)
+                .apply(new RequestOptions().circleCrop().diskCacheStrategy(DiskCacheStrategy.ALL))
                 .error(R.drawable.error)
                 .into(imageView);
         pages.add(imageView);

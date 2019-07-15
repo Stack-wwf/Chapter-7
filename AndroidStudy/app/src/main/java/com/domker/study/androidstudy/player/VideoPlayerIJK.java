@@ -20,7 +20,7 @@ public class VideoPlayerIJK extends FrameLayout {
     /**
      * 由ijkplayer提供，用于播放视频，需要给他传入一个surfaceView
      */
-    private IMediaPlayer mMediaPlayer = null;
+    public IMediaPlayer mMediaPlayer = null;
 
     private boolean hasCreateSurfaceView = false;
     /**
@@ -133,6 +133,7 @@ public class VideoPlayerIJK extends FrameLayout {
         AssetFileDescriptor fileDescriptor = mContext.getResources().openRawResourceFd(resourceId);
         RawDataSourceProvider provider = new RawDataSourceProvider(fileDescriptor);
         mMediaPlayer.setDataSource(provider);
+        //mMediaPlayer.setLooping(true);
     }
 
     /**
@@ -143,6 +144,7 @@ public class VideoPlayerIJK extends FrameLayout {
             mMediaPlayer.stop();
             mMediaPlayer.setDisplay(null);
             mMediaPlayer.release();
+            mMediaPlayer = null;
         }
         IjkMediaPlayer ijkMediaPlayer = new IjkMediaPlayer();
 
@@ -150,13 +152,17 @@ public class VideoPlayerIJK extends FrameLayout {
         ijkMediaPlayer.setOption(IjkMediaPlayer.OPT_CATEGORY_PLAYER, "mediacodec", 1);
 
         mMediaPlayer = ijkMediaPlayer;
-        ((IjkMediaPlayer) mMediaPlayer).setSpeed(2f);
+        ((IjkMediaPlayer) mMediaPlayer).setSpeed(1f);
         if (listener != null) {
             mMediaPlayer.setOnPreparedListener(listener);
             mMediaPlayer.setOnInfoListener(listener);
             mMediaPlayer.setOnSeekCompleteListener(listener);
             mMediaPlayer.setOnBufferingUpdateListener(listener);
             mMediaPlayer.setOnErrorListener(listener);
+        }
+        if (surfaceView != null) {
+            mMediaPlayer.setDisplay(surfaceView.getHolder());
+            mMediaPlayer.prepareAsync();
         }
     }
 
@@ -165,6 +171,11 @@ public class VideoPlayerIJK extends FrameLayout {
         this.listener = listener;
         if (mMediaPlayer != null) {
             mMediaPlayer.setOnPreparedListener(listener);
+            mMediaPlayer.setOnInfoListener(listener);
+            mMediaPlayer.setOnSeekCompleteListener(listener);
+            mMediaPlayer.setOnBufferingUpdateListener(listener);
+            mMediaPlayer.setOnErrorListener(listener);
+            mMediaPlayer.setOnCompletionListener(listener);
         }
     }
 

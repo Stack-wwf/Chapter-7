@@ -13,6 +13,8 @@ import android.support.v7.app.AppCompatActivity;
 import android.view.SurfaceHolder;
 import android.view.View;
 import android.view.WindowManager;
+import android.view.animation.Animation;
+import android.view.animation.AnimationUtils;
 import android.widget.Button;
 import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
@@ -22,12 +24,16 @@ import android.widget.TextView;
 import com.domker.study.androidstudy.player.VideoPlayerIJK;
 import com.domker.study.androidstudy.player.VideoPlayerListener;
 
+import java.util.Timer;
+import java.util.TimerTask;
+
 import tv.danmaku.ijk.media.player.IMediaPlayer;
 import tv.danmaku.ijk.media.player.IjkMediaPlayer;
 
 public class IJKPlayerActivity extends Activity implements View.OnClickListener {
     VideoPlayerIJK ijkPlayer = null;
     Button btnSetting;
+    Button btnStop;
     Button btnPlay;
     SeekBar seekBar;
     TextView tvTime;
@@ -43,6 +49,10 @@ public class IJKPlayerActivity extends Activity implements View.OnClickListener 
 
     private Handler handler;
     public static final int MSG_REFRESH = 1001;
+
+    private boolean menu_visible = true;
+    RelativeLayout rl_bottom;
+    boolean isPlayFinish = false;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -71,6 +81,10 @@ public class IJKPlayerActivity extends Activity implements View.OnClickListener 
         btnPlay = findViewById(R.id.btn_play);
         seekBar = findViewById(R.id.seekBar);
         btnSetting = findViewById(R.id.btn_setting);
+        btnStop = findViewById(R.id.btn_stop);
+
+        rl_bottom = (RelativeLayout) findViewById(R.id.include_play_bottom);
+        VideoPlayerIJK ijkPlayerView = findViewById(R.id.ijkPlayer);
 
         tvTime = findViewById(R.id.tv_time);
         tvLoadMsg = findViewById(R.id.tv_load_msg);
@@ -79,6 +93,8 @@ public class IJKPlayerActivity extends Activity implements View.OnClickListener 
         tvPlayEnd = findViewById(R.id.tv_play_end);
         rlPlayer = findViewById(R.id.rl_player);
 
+        btnStop.setOnClickListener(this);
+        ijkPlayerView.setOnClickListener(this);
         btnSetting.setOnClickListener(this);
         btnPlay.setOnClickListener(this);
 
@@ -110,7 +126,7 @@ public class IJKPlayerActivity extends Activity implements View.OnClickListener 
                     case MSG_REFRESH:
                         if (ijkPlayer.isPlaying()) {
                             refresh();
-                            handler.sendEmptyMessageDelayed(MSG_REFRESH, 1000);
+                            handler.sendEmptyMessageDelayed(MSG_REFRESH, 50);
                         }
 
                         break;
@@ -118,7 +134,6 @@ public class IJKPlayerActivity extends Activity implements View.OnClickListener 
 
             }
         };
-
     }
 
     private void refresh() {
@@ -161,7 +176,9 @@ public class IJKPlayerActivity extends Activity implements View.OnClickListener 
 
             @Override
             public void onCompletion(IMediaPlayer mp) {
+                seekBar.setProgress(100);
                 btnPlay.setText("播放");
+                btnStop.setText("播放");
             }
 
             @Override
@@ -176,6 +193,7 @@ public class IJKPlayerActivity extends Activity implements View.OnClickListener 
 
             @Override
             public void onPrepared(IMediaPlayer mp) {
+                isPlayFinish = false;
                 mVideoWidth = mp.getVideoWidth();
                 mVideoHeight = mp.getVideoHeight();
                 toggle();
@@ -185,7 +203,6 @@ public class IJKPlayerActivity extends Activity implements View.OnClickListener 
 
             @Override
             public void onSeekComplete(IMediaPlayer mp) {
-
             }
 
             @Override
@@ -227,6 +244,20 @@ public class IJKPlayerActivity extends Activity implements View.OnClickListener 
     @Override
     public void onClick(View view) {
         switch (view.getId()) {
+            case R.id.ijkPlayer:
+                if (menu_visible == false) {
+                    rl_bottom.setVisibility(View.VISIBLE);
+                    Animation animation = AnimationUtils.loadAnimation(getApplicationContext(), R.anim.show_bottom);
+                    rl_bottom.startAnimation(animation);
+                    menu_visible = true;
+                } else {
+                    rl_bottom.setVisibility(View.INVISIBLE);
+                    Animation animation = AnimationUtils.loadAnimation(getApplicationContext(), R.anim.move_bottom);
+                    rl_bottom.startAnimation(animation);
+                    menu_visible = false;
+                }
+
+                break;
             case R.id.btn_setting:
                 toggle();
                 break;
@@ -236,8 +267,20 @@ public class IJKPlayerActivity extends Activity implements View.OnClickListener 
                     btnPlay.setText(getResources().getString(R.string.media_play));
                 } else {
                     ijkPlayer.start();
-                    tvPlayEnd.setVisibility(View.INVISIBLE);
                     btnPlay.setText(getResources().getString(R.string.pause));
+                }
+                break;
+            case R.id.btn_stop:
+                if (btnStop.getText().toString().equals(getResources().getString(R.string.stop))) {
+                    ijkPlayer.stop();
+                    /*ijkPlayer.mMediaPlayer.prepareAsync();
+                    ijkPlayer.mMediaPlayer.seekTo(0);*/
+                    btnStop.setText(getResources().getString(R.string.media_play));
+                } else {
+                    //ijkPlayer.setVideoResource(R.raw.big_buck_bunny);
+                    //ijkPlayer.mMediaPlayer.start();
+                    ijkPlayer.setVideoResource(R.raw.big_buck_bunny);
+                    btnStop.setText(getResources().getString(R.string.stop));
                 }
                 break;
         }
