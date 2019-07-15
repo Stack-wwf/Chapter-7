@@ -10,6 +10,7 @@ import android.os.Handler;
 import android.os.Message;
 import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
+import android.view.Surface;
 import android.view.SurfaceHolder;
 import android.view.View;
 import android.view.WindowManager;
@@ -193,10 +194,13 @@ public class IJKPlayerActivity extends Activity implements View.OnClickListener 
 
             @Override
             public void onPrepared(IMediaPlayer mp) {
+                refresh();
+                handler.sendEmptyMessageDelayed(MSG_REFRESH, 50);
                 isPlayFinish = false;
                 mVideoWidth = mp.getVideoWidth();
                 mVideoHeight = mp.getVideoHeight();
-                toggle();
+                videoScreenInit();
+                //toggle();
                 mp.start();
                 rlLoading.setVisibility(View.GONE);
             }
@@ -277,8 +281,6 @@ public class IJKPlayerActivity extends Activity implements View.OnClickListener 
                     ijkPlayer.mMediaPlayer.seekTo(0);*/
                     btnStop.setText(getResources().getString(R.string.media_play));
                 } else {
-                    //ijkPlayer.setVideoResource(R.raw.big_buck_bunny);
-                    //ijkPlayer.mMediaPlayer.start();
                     ijkPlayer.setVideoResource(R.raw.big_buck_bunny);
                     btnStop.setText(getResources().getString(R.string.stop));
                 }
@@ -286,8 +288,16 @@ public class IJKPlayerActivity extends Activity implements View.OnClickListener 
         }
     }
 
+    private void videoScreenInit() {
+        if (isPortrait) {
+            portrait();
+        } else {
+            lanscape();
+        }
+    }
+
     private void toggle() {
-        if (isPortrait == false) {
+        if (!isPortrait) {
             portrait();
         } else {
             lanscape();
@@ -304,6 +314,9 @@ public class IJKPlayerActivity extends Activity implements View.OnClickListener 
         float width = wm.getDefaultDisplay().getWidth();
         float height = wm.getDefaultDisplay().getHeight();
         float ratio = width / height;
+        if (width < height) {
+            ratio = height/width;
+        }
 
         RelativeLayout.LayoutParams layoutParams = (RelativeLayout.LayoutParams) rlPlayer.getLayoutParams();
         layoutParams.height = (int) (mVideoHeight * ratio);

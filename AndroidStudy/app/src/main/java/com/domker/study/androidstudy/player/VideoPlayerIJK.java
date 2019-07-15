@@ -134,6 +134,10 @@ public class VideoPlayerIJK extends FrameLayout {
         RawDataSourceProvider provider = new RawDataSourceProvider(fileDescriptor);
         mMediaPlayer.setDataSource(provider);
         //mMediaPlayer.setLooping(true);
+        if (surfaceView != null) {
+            mMediaPlayer.setDisplay(surfaceView.getHolder());
+            mMediaPlayer.prepareAsync();
+        }
     }
 
     /**
@@ -159,10 +163,6 @@ public class VideoPlayerIJK extends FrameLayout {
             mMediaPlayer.setOnSeekCompleteListener(listener);
             mMediaPlayer.setOnBufferingUpdateListener(listener);
             mMediaPlayer.setOnErrorListener(listener);
-        }
-        if (surfaceView != null) {
-            mMediaPlayer.setDisplay(surfaceView.getHolder());
-            mMediaPlayer.prepareAsync();
         }
     }
 
