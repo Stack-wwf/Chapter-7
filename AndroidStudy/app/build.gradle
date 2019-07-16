@@ -37,6 +37,10 @@ dependencies {
     implementation 'com.android.support.constraint:constraint-layout:1.1.3'
 
 
+    implementation project(':ijkplayer-armv7a')
+    implementation project(':ijkplayer-java')
+    implementation project(':ijkplayer-x86')
+    implementation project(':ijkplayer-exo')
 
     /*implementation 'tv.danmaku.ijk.media:ijkplayer-java:0.8.8'
     implementation 'tv.danmaku.ijk.media:ijkplayer-armv7a:0.8.8'
