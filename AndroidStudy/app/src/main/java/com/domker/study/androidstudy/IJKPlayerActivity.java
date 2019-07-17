@@ -165,7 +165,7 @@ public class IJKPlayerActivity extends Activity implements View.OnClickListener 
         ijkPlayer.setListener(new VideoPlayerListener());
         //ijkPlayer.setVideoResource(R.raw.yuminhong);
         //ijkPlayer.setVideoResource(R.raw.big_buck_bunny);
-        ijkPlayer.setVideoPath("https://media.w3.org/2010/05/sintel/trailer.mp4");
+        ijkPlayer.setVideoPath("https://sf3-hscdn-tos.pstatp.com/obj/developer-baas/baas/tt7217xbo2wz3cem41/730d27a515d0cccd_1563350028097.mp4");
         //ijkPlayer.setVideoPath("http://vjs.zencdn.net/v/oceans.mp4");
         /*ijkPlayer.setVideoResource(R.raw.big_buck_bunny);
         ijkPlayer.setVideoPath("https://media.w3.org/2010/05/sintel/trailer.mp4");
