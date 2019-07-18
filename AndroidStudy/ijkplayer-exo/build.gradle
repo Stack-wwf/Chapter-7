@@ -24,8 +24,9 @@ android {
 
 dependencies {
     compile fileTree(dir: 'libs', include: ['*.jar'])
+    implementation fileTree(dir: 'libs', include: ['*.aar'])
 
-    compile 'com.google.android.exoplayer:exoplayer:r1.5.11'
+    //compile 'com.google.android.exoplayer:exoplayer:r1.5.11'
 
     compile project(':ijkplayer-java')
     // compile 'tv.danmaku.ijk.media:ijkplayer-java:0.8.8'
